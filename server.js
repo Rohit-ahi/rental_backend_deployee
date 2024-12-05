@@ -18,7 +18,7 @@ server.set('view engine','ejs')
 
 const corsoption = {
        origin:'https://rohitahirwar.info',
-       Credential : true
+       credentials: true
 }
 
 server.use(cors(corsoption))
