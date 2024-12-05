@@ -101,7 +101,7 @@ router.post("/sp_reg", async (req, res) => {
 
   });
 
-   
+
     router.put('/email_verify/:token',async(req,res)=>{
         try {
             
@@ -158,7 +158,7 @@ router.post("/login", async (req, res) => {
 
   } catch (error) {
       console.error('error',error)
-      return res.json(new ApiResponse(false,'Network error'))
+      return res.json(new ApiResponse(false,error.message))
   }
 
 });
