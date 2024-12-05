@@ -158,7 +158,7 @@ router.post("/login", async (req, res) => {
 
   } catch (error) {
       console.error('error',error)
-      return res.json(new ApiResponse(false,error.message))
+      return res.json(new ApiResponse(false,'Network Error'))
   }
 
 });
