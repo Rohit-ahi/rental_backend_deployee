@@ -93,7 +93,7 @@
 
         @media (max-width: 576px) {
         .popup {
-          padding: 15px; /* Reduce padding on smaller screens */
+          padding: 15px; 
         }
 
         .popup h2 {
@@ -176,7 +176,7 @@
                      feedback2.innerText = 'Password must be at least 5 characters long.'
                      return 
                   }
-                  fetch(`http://localhost:8080/rental/email_verify/${token}`,{
+                  fetch(`https://rental-backend-deployee.onrender.com/rental/email_verify/${token}`,{
                      method:'PUT',
                      headers:{
                         'Content-Type':'application/json'
@@ -219,7 +219,7 @@
     <div id="popup" class="popup">
          <h2>Email Verified Successfully !</h2>
          <p>Your email has been verified. You can now proceed to the login page.</p>
-         <a href="http://localhost:3000/login">Go to Login Page</a>
+         <a href="https://rohitahirwar.info/login">Go to Login Page</a>
      </div>
 
     <form onsubmit="send_data(event)">

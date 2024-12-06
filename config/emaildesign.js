@@ -27,7 +27,7 @@ function htmlfun(name,token) {
         <p style="color: #666; font-size: 16px; margin: 10px 0; line-height: 1.5;">
           Thank you for joining Rento Vehicle as a Service Provider. Please verify your email to activate your account.
         </p>
-        <a href="http://localhost:${process.env.PORT}/verify/${token}" style="display: inline-block; margin-top: 20px; padding: 10px 20px; background-color: #007bff; color: #ffffff; text-decoration: none; border-radius: 5px; font-size: 16px;">
+        <a href="https://rental-backend-deployee.onrender.com/verify/${token}" style="display: inline-block; margin-top: 20px; padding: 10px 20px; background-color: #007bff; color: #ffffff; text-decoration: none; border-radius: 5px; font-size: 16px;">
           Activate Your Account
         </a>
       </td>
@@ -76,7 +76,7 @@ function htmlfun(name,token) {
                       Please Verify your Email through given verification link.
                   </p>
                   <p style="color: #666; font-size: 16px; line-height: 1.5;">
-                     <a href="http://localhost:${process.env.PORT}/verify/${token}" style="display: inline-block; margin-top: 20px; padding: 10px 20px; background-color: rgb(255, 0, 0); color: #ffffff; text-decoration: none; border-radius: 5px;">Verify</a>
+                     <a href="https://rental-backend-deployee.onrender.com/verify/${token}" style="display: inline-block; margin-top: 20px; padding: 10px 20px; background-color: rgb(255, 0, 0); color: #ffffff; text-decoration: none; border-radius: 5px;">Verify</a>
                   </p>
               </td>
           </tr>

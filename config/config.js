@@ -1,6 +1,7 @@
 
 
 require('dotenv').config()
+console.log('Loaded Environment Variables:', process.env);
 
  module.exports = {
 
@@ -10,7 +11,8 @@ require('dotenv').config()
     password: process.env.db_password,
     database: process.env.db_name,
     host: process.env.db_host,
-    dialect: process.env.db_dialect 
+    port : process.env.db_port,
+    dialect: process.env.db_dialect ,
   },
 
   
@@ -21,6 +23,7 @@ require('dotenv').config()
     password: process.env.db_password,
     database: process.env.db_name,
     host: process.env.db_host,
+    port : process.env.db_port,
     dialect: process.env.db_dialect 
   }
 

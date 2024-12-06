@@ -69,11 +69,11 @@ router.post('/save_vm',async(req,res)=>{
              const replacedPath = temppath.replace(/\\/g, '/');
 
              await file.mv(replacedPath) 
-             const finaldata = {...reqdata , image :`http://localhost:8080/vm/${filename}` }
+             const finaldata = {...reqdata , image :`https://rental-backend-deployee.onrender.com/vm/${filename}` }
              await VehicleMaster.create(finaldata,{transaction:t})
 
              fs.renameSync(temppath, filepath,(err)=>{
-                  if(err) throw err
+                  if(err) throw err.message
              })
              await t.commit()
              return res.status(200).json(new ApiResponse(true,'Saved VehicleMaster'))
@@ -248,7 +248,7 @@ try {
         const replacedPath = temppath.replace(/\\/g, '/');  // Handling slashes for Windows
         await file.mv(replacedPath);
 
-        imagepath = `http://localhost:8080/vm/${filename}`; 
+        imagepath = `https://rental-backend-deployee.onrender.com/vm/${filename}`; 
         fs.rename(temppath, filepath,(err)=>{
             if(err) throw err
             

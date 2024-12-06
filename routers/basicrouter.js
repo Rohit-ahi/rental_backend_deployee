@@ -95,7 +95,7 @@ router.post("/sp_reg", async (req, res) => {
         }
     }catch (error) {
      await t.rollback()
-     console.error('error :',error)
+     console.error('error :',error.message)
      return res.json(new ApiResponse(false, "Registration Failed"));
     }
 
