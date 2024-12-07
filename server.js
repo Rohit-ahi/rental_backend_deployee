@@ -30,7 +30,10 @@ cloudinary.config({
        api_secret: process.env.CLOUD_API_SECRET,
 });
 
-server.use(fileupload())
+server.use(fileupload({
+       useTempFiles: true,
+       tempFileDir: '/tmp/'
+}))
 
 server.use('/rental',basicrouter)
 server.use('/auth',authrouter)
