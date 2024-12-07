@@ -10,6 +10,7 @@ const {Vehicles} = require('../models');
 const {User, ServiceProvider} = require('../models')
 const{ VehicleRequest} = require('../models')
 const fs = require('fs')
+const cloudinary = require('cloudinary').v2;
 
 
 
@@ -56,32 +57,26 @@ router.post('/save_vm',async(req,res)=>{
          return res.json(new ApiResponse(false,'Modal name must be Unique'))
       }
       const t = await sequelize.transaction() 
-      let temppath
-      try {
+      
+    try {
+        const file = req.files?.image;
+        if (!file) {
+            return res.status(400).json(new ApiResponse(false, 'Image file is required'));
+        }
+        const cloudinaryResult = await cloudinary.uploader.upload(file.tempFilePath, {
+            folder: 'rental_images', 
+            public_id: uuidv4(),    
+        });
 
-             const file = req.files.image  
-             if(!file) {
-                return res.status(400).json(new ApiResponse(false,'Image file is required'))
-             }
-             const filename = uuidv4() + path.extname(file.name) 
-             const filepath = path.join(__dirname,'../uploads/vm',filename) 
-             temppath = filepath + '.temp'
-             const replacedPath = temppath.replace(/\\/g, '/');
-
-             await file.mv(replacedPath) 
-             const finaldata = {...reqdata , image :`https://rental-backend-deployee.onrender.com/vm/${filename}` }
-             await VehicleMaster.create(finaldata,{transaction:t})
-
-             fs.renameSync(temppath, filepath,(err)=>{
-                  if(err) throw err.message
-             })
-             await t.commit()
-             return res.status(200).json(new ApiResponse(true,'Saved VehicleMaster'))
+        const finaldata = { ...reqdata, image: cloudinaryResult.secure_url };
+        await VehicleMaster.create(finaldata, { transaction: t });
+        await t.commit();
+        return res.status(200).json(new ApiResponse(true, 'Saved VehicleMaster'))
 
        } catch (error) {
             await t.rollback();
-            if (fs.existsSync(temppath)) {
-              fs.unlinkSync(temppath);
+            if (error.public_id) {
+                await cloudinary.uploader.destroy(error.public_id);
             }
           console.error('error :' , error)
           return  res.json(new ApiResponse(false,"Failed to Save VehicleMaster"))

@@ -3,6 +3,7 @@ const express = require('express')
 const cors = require('cors')
 const fileupload = require('express-fileupload')
 const path = require('path')
+const cloudinary = require('cloudinary').v2
 
 require('dotenv').config()
 
@@ -20,8 +21,15 @@ const corsoption = {
        origin:'https://rohitahirwar.info',
        credentials: true
 }
-
 server.use(cors(corsoption))
+
+cloudinary.config({
+
+       cloud_name: process.env.CLOUD_NAME,
+       api_key: process.env.CLOUD_API_KEY,
+       api_secret: process.env.CLOUD_API_SECRET,
+});
+
 server.use(fileupload())
 
 server.use('/rental',basicrouter)
