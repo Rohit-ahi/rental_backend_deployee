@@ -264,7 +264,7 @@ try {
            ...(imagepath && { image: imagepath })
         };
        
-       await VehicleMaster.update(finaldata, { where: { id: vmid } },{transaction:t});
+       await VehicleMaster.update(finaldata, { where: { id: vmid } ,transaction:t});
        await t.commit()
        return res.json(new ApiResponse(true, 'Updated Successfully'));
 
@@ -278,5 +278,4 @@ try {
 
 });
            
-
 module.exports = router
