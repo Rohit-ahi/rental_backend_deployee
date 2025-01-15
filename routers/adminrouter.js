@@ -216,61 +216,55 @@ router.delete('/vehicledel/:vid', async(req,res)=>{
      } catch (error) {
            res.json(new ApiResponse(false,'Server error'))
      }
-
-
 })
 
 
-router.put('/update_vm/:id',async(req,res)=>{
-const t = await sequelize.transaction()
-const vmid = req.params.id;
-const reqdata = req.body;
-let temppath
-try {
-    
-    const vmaster = await VehicleMaster.findOne({ where: { id: vmid } });
-    if (!vmaster) {
-        return res.json(new ApiResponse(false, 'VehicleMaster not found'));
-    }
-    
-    let imagepath = null;
-    const oldImagePath = vmaster.image ? path.join(__dirname, '../uploads/vm', path.basename(vmaster.image)) : null;
-    if (req.files && req.files.image) {
-        const file = req.files.image;
-        const filename = uuidv4() + path.extname(file.name);
-        const filepath = path.join( __dirname ,'../uploads/vm', filename);
-        temppath = filepath + '.temp'
-        const replacedPath = temppath.replace(/\\/g, '/');  // Handling slashes for Windows
-        await file.mv(replacedPath);
 
-        imagepath = `https://rental-backend-deployee.onrender.com/vm/${filename}`; 
-        fs.rename(temppath, filepath,(err)=>{
-            if(err) throw err
-            
-       });
+router.put('/update_vm/:id', async (req, res) => {
 
-       if (oldImagePath && fs.existsSync(oldImagePath)) {
-        fs.unlinkSync(oldImagePath);
-       }
+        const t = await sequelize.transaction(); 
+        const vmid = req.params.id; 
+        const reqdata = req.body;
 
-    }
+    try {
+           const vmaster = await VehicleMaster.findOne({ where: { id: vmid } });
+           if (!vmaster) {
+               return res.json(new ApiResponse(false, 'VehicleMaster not found'));
+            }
+
+        let imagepath = null
+        if(req.files && req.files.image) {
+
+             cloudinaryResult = await cloudinary.uploader.upload(file.tempFilePath,{
+                 folder: 'rental_images',
+                 public_id : uuidv4()
+             })
+             
+             imagepath = cloudinaryResult.secure_url
+
+            if (vmaster.image) {
+                const publicId = vmaster.image.split('/').pop().split('.')[0]; 
+                await cloudinary.uploader.destroy(`rental_images/${publicId}`);
+            }
+
+         }
         const finaldata = {
-           ...reqdata,
-           ...(imagepath && { image: imagepath })
+            ...reqdata,
+            ...(imagepath && { image: imagepath }), 
         };
-       
-       await VehicleMaster.update(finaldata, { where: { id: vmid } ,transaction:t});
-       await t.commit()
-       return res.json(new ApiResponse(true, 'Updated Successfully'));
 
-} catch (error) {
-    await t.rollback()
-    if (fs.existsSync(temppath)) {
-        fs.unlinkSync(temppath);
-      }
-    return res.json(new ApiResponse(false, 'Falied to Update'));
-}
+        await VehicleMaster.update(finaldata, { where: { id: vmid }, transaction: t });
+        await t.commit(); 
+
+        return res.json(new ApiResponse(true, 'Updated Successfully'));
+    } catch (error) {
+        await t.rollback(); 
+        console.error('Error:', error);
+
+        return res.json(new ApiResponse(false, 'Failed to Update'));
+    }
 
 });
+
            
 module.exports = router
