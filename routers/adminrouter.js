@@ -235,6 +235,8 @@ router.put('/update_vm/:id', async (req, res) => {
         let imagepath = null
         if(req.files && req.files.image) {
 
+            const file = req.files.image;
+            
              cloudinaryResult = await cloudinary.uploader.upload(file.tempFilePath,{
                  folder: 'rental_images',
                  public_id : uuidv4()
