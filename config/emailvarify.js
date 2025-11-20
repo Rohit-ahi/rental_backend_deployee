@@ -13,6 +13,8 @@ const email_varify = async(email,emailbody,emailtitle)=>{
                pass : process.env.app_password
             }
          })
+
+         await transporter.verify();
          const mailOption = {
              from: process.env.user_mail, 
              to:email ,
