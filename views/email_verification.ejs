@@ -1,0 +1,261 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Verify Email</title>
+  <link rel="stylesheet" href="/vm/assets/boot/bootstrap.min.css">
+  <style>
+    body {
+      background-color: #f8f9fa;
+      font-family: Arial, sans-serif;
+    }
+    .container {
+      margin-top: 100px;
+      max-width: 400px;
+      background: #fff;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    }
+    .form-title {
+      text-align: center;
+      margin-bottom: 20px;
+      font-weight: bold;
+      color: #343a40;
+    }
+    .form-control:focus {
+      box-shadow: 0px 0px 5px rgba(0, 123, 255, 0.5);
+      border-color: #007bff;
+    }
+    .btn-primary {
+      width: 100%;
+    }
+
+   .toggle-password {
+      position: absolute;
+      right: 15px;
+      top: 38px;
+      cursor: pointer;
+      color: #007bff;
+    }
+
+    .progress {
+      height: 10px;
+    }
+
+
+    .popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            z-index: 1000;
+            display: none;
+        }
+
+        .popup h2 {
+            color: green;
+        }
+
+        .popup a {
+            display: inline-block;
+            margin-top: 15px;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+
+        .popup a:hover {
+            background-color: #0056b3;
+        }
+
+       
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+            display: none;
+        }
+
+        @media (max-width: 576px) {
+        .popup {
+          padding: 15px; 
+        }
+
+        .popup h2 {
+          font-size: 1.25rem; 
+       }
+
+        .popup a {
+          font-size: 0.9rem; 
+          padding: 8px 15px; 
+      }
+      .popup {
+        width: 92%; 
+        max-width: none; 
+    }
+}
+
+  </style>
+
+  <script>
+            const showpassword = ()=>{
+                  const input = document.getElementById('pass')
+                  const span = document.getElementById('icon')
+                  if(input.type === 'password') {
+                      input.type = 'text'
+                      span.innerText = '👁️'
+                  }else {
+                      input.type = 'password'
+                      span.innerText = '👁️‍🗨️'  
+                  }      
+              } 
+
+           function validate() {
+
+                  const input = document.getElementById('pass').value
+                  const progressbar = document.getElementById('progress-bar')
+                  const feedback = document.getElementById('feedback')
+                  
+                  let strength = 0
+                  if (input.length >= 6) strength += 20;
+                  if (/[A-Z]/.test(input)) strength += 20;
+                  if (/[a-z]/.test(input)) strength += 20; 
+                  if (/[0-9]/.test(input)) strength += 20;
+                  if (/[!@#$%^&*<>:;?(){},|.'"]/.test(input)) strength += 20;
+                
+
+                  progressbar.style.width = `${strength}%`
+                  progressbar.setAttribute('aria-valuenow',strength)
+ 
+                if (strength === 0) {
+                  progressbar.className = ''; 
+                  feedback.textContent = '';
+                  return
+                }
+                if (strength <= 40) {
+                  progressbar.className = 'progress-bar bg-danger'; // Weak
+                  feedback.textContent = 'Weak password';
+                  feedback.style.color = 'red'
+                } else if (strength <= 80) {
+                  progressbar.className = 'progress-bar bg-warning'; // Moderate
+                  feedback.textContent = 'Moderate password';
+                  feedback.style.color = 'orange'
+                } else {
+                  progressbar.className = 'progress-bar bg-success'; // Strong
+                  feedback.textContent = 'Strong password';
+                  feedback.style.color = 'green'
+                }
+               
+            }  
+
+        let token = '<%= token %>'
+        const send_data = (e)=>{
+                  e.preventDefault()
+                  const {name,value} = document.getElementById('pass')
+                  const feedback2 = document.getElementById('feedback2')
+                  const data ={
+                      [name] : value
+                  }
+                  const pass = data.password
+                  if(pass.length < 5) {
+                     feedback2.innerText = 'Password must be at least 5 characters long.'
+                     return 
+                  }
+                  fetch(`https://rental-backend-deployee.onrender.com/rental/email_verify/${token}`,{
+                     method:'PUT',
+                     headers:{
+                        'Content-Type':'application/json'
+                    },
+                    body:JSON.stringify(data)
+                  })
+                  .then(res=>res.json()).then(data=>{
+                      if(data.status) {
+                          document.getElementById('popup').style.display = 'block';
+                          document.getElementById('overlay').style.display = 'block';
+                      }else {
+                        alert(data.msg);
+                      }
+                  })
+                  .catch((err)=>{
+                      console.error('error',err)
+                      alert("An error occurred while verifying your email. Please try again later.");
+                  })
+                  const progressbar = document.getElementById('progress-bar')
+                  progressbar.className = '';
+                  feedback.textContent = '';
+                  e.target.reset()
+            }
+
+            document.getElementById('overlay').addEventListener('click', () => {
+                   document.getElementById('popup').style.display = 'none';
+                   document.getElementById('overlay').style.display = 'none';
+              });
+
+  </script>
+</head>
+
+<body>
+        
+  <div class="container">
+    <h1 class="form-title">Verify Your Email</h1>
+    <p class="text-center text-muted">Set a password to verify your account.</p>
+
+    <div id="overlay" class="overlay"></div>
+    <div id="popup" class="popup">
+         <h2>Email Verified Successfully !</h2>
+         <p>Your email has been verified. You can now proceed to the login page.</p>
+         <a href="https://rohitahirwar.info/login">Go to Login Page</a>
+     </div>
+
+    <form onsubmit="send_data(event)">
+      <div class="form-group  position-relative">
+        <label for="password" class="form-label" >Password</label>
+        <input
+          type='password'
+          id="pass"
+          name='password'
+          class="form-control"
+          placeholder="Create Strong password"
+          oninput="validate()"
+          required
+        />
+       <span id="icon" class="toggle-password" onclick="showpassword()">👁️‍🗨️</span>
+      </div>
+      <br>
+      <button type="submit" class="btn btn-primary">Submit</button>
+       
+      <div class="progress mt-3">
+        <div
+          id="progress-bar"
+          class="progress-bar"
+          role="progressbar"
+          style="width: 0%;"
+          aria-valuenow="0"
+          aria-valuemin="0"
+          aria-valuemax="100"
+        ></div>
+      </div>
+      <small id="feedback" class="mt-2"></small>
+      <p id="feedback2" class="mt-2" style="color: black; font-weight:500;"></p>
+    </form>
+  </div>
+</body>
+</html>
+
+
+      
